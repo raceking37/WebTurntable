@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Web Turntable</title>
+        <link rel="icon" type="image/png" href="favicon.png">
+        <link rel="stylesheet" type="text/css" href="style.css">
+    </head>
+
+    <body>
+        
+        <header>
+            <h1> Web Turntable</h1>
+        </header>
+
+        <main>
+            <div class="option">
+                <h2>Rotate direction</h2>
+                <div class="slider">
+                    <input class="input-slider" type="range" id="stepping_direction" min="0" max="2" value="1" step="1" oninput="UpdateDirection()" list="direction">
+                    <datalist id="direction">
+                        <option value="0">CW</option>
+                        <option value="1">OFF</option>
+                        <option value="2">CCW </option>
+                    </datalist>
+                </div>
+            </div>
+
+            <div class="option">
+                <h2>Turning speed</h2>
+                <div class="slider">
+                    <input class="input-slider" type="range" id="stepping_speed" min="0" max="100" value="0" step="1" oninput="UpdateSpeed()" list="speed">
+                    <datalist id="speed">
+                        <option value="0">0%</option>
+                        <option value="25">25%</option>
+                        <option value="50">50%</option>
+                        <option value="75">75%</option>
+                        <option value="100">100%</option>
+                    </datalist>
+                </div>
+            </div>
+
+            <div class="option">
+                <h2>Stepping mode</h2>
+                <div class="slider">
+                    <input class="input-slider" type="range" id="stepping_mode" min="0" max="1" value="0" step="1" oninput="UpdateMode()" list="mode">
+                    <datalist id="mode">
+                        <option value="0">Full Stepping</option>
+                        <option value="1">Half Stepping</option>
+                    </datalist>
+                </div>
+            </div>
+        </main>
+        
+        <script src="script.js"></script>
+    </body>
+</html>
