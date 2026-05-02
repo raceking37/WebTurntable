@@ -30,11 +30,15 @@ Simple code (example) that just rotates the turntable.
 ### **WebTurntable**
 The full version of the code. The turntable acts as a Wi-Fi access point, allowing access to its control webpage.
 
+The web version stores the last direction, speed, and stepping mode in LittleFS, and restores those values after reboot/power cycle.
+
+To protect flash memory, settings are written after a short idle delay (about 750 ms). After changing controls, wait about 1 second before unplugging power so the latest state is saved.
+
 Libraries you'll need are:
 - Arduino_JSON
 - ESPAsyncTCP
 - ESP AsyncWebServer
 
-You can upload the code directly from VSCode, although the webpage data has to be written to flash. I did this using the old arduino IDE with the SPIFFS tool.
+You can upload the code directly from VSCode, although the webpage data has to be written to flash. I did this using the Arduino IDE with the LittleFS tool.
 
 **Make sure the flash size is set to: "4MB (FS:3MB OTA: ~512KB)"**

@@ -4,7 +4,7 @@
 #include <ESP8266WiFi.h>
 #include <ESPAsyncTCP.h>
 #include <ESPAsyncWebServer.h>
-#include <FS.h>
+#include <LittleFS.h>
 
 #define SSID        "TURNTABLE"
 #define PASSWORD    ""
@@ -14,6 +14,7 @@ void handleClientMessage(void *arg, uint8_t *data, size_t len);
 void initWebserver();
 void onIndexRequest(AsyncWebServerRequest *request);
 void onCSSRequest(AsyncWebServerRequest *request);
+void handleWebserver();
 void updatePage();
 
 #endif // SERVER_H
