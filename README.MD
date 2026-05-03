@@ -22,23 +22,27 @@ A webpage controllable turntable project that I made during a free weekend. This
 - Bottom plate
 
 ## **Compile and upload the code**
-The code is based on the arduino software platform. In order to compile and upload this code, it is recommended to install the VSCode plugin for arduino. Also make sure the ESP8266 board package is installed.
+The code is based on the arduino software platform. In order to compile and upload the code, it is recommended to install the [ArduinoIDE](https://www.arduino.cc/en/software/) and the [ESP8266 board package](https://arduino-esp8266.readthedocs.io/en/latest/installing.html).
 
 ### **Basic example**
-Simple code (example) that just rotates the turntable.
+Simple code example that just rotates the turntable.
 
 ### **WebTurntable**
-The full version of the code. The turntable acts as a Wi-Fi access point, allowing access to its control webpage.
+The full version of the code. The turntable acts as a Wi-Fi access point, allowing you to contoll the turntable through a webinterface.
 
-The web version stores the last direction, speed, and stepping mode in LittleFS, and restores those values after reboot/power cycle.
+The last direction, speed, and stepping mode are stored in [LittleFS](https://github.com/earlephilhower/arduino-littlefs-upload), and loaded from flash after reboot/power cycle. To prevent excessive wear on the flash memory, settings are written after a short idle delay (750 ms). After changing controls, wait about 1 second before unplugging power so the latest state is saved.
 
-To protect flash memory, settings are written after a short idle delay (about 750 ms). After changing controls, wait about 1 second before unplugging power so the latest state is saved.
+The following additional libraries are used:
+- [ESPAsyncWebServer](https://github.com/ESP32Async/ESPAsyncWebServer)
+- [ESPAsyncTCP](https://github.com/ESP32Async/ESPAsyncTCP)
+- [Arduino_JSON](https://github.com/arduino-libraries/Arduino_JSON)
 
-Libraries you'll need are:
-- Arduino_JSON
-- ESPAsyncTCP
-- ESP AsyncWebServer
 
-You can upload the code directly from VSCode, although the webpage data has to be written to flash. I did this using the Arduino IDE with the LittleFS tool.
+You can upload the code directly from the ArduinoIDE. To upload the webpage data you will need to install the [LittleFS tool](https://github.com/earlephilhower/arduino-littlefs-upload).
+
+You can open the web interface to control the turntable as follows:
+1. Connect to the Wi-Fi hotspot with name `TURNTABLE`
+2. Open your browser and enter the following address `http://192.168.4.1`
+3. You should now be in the webinterface to control the turntable
 
 **Make sure the flash size is set to: "4MB (FS:3MB OTA: ~512KB)"**

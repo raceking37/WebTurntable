@@ -1,2 +1,8 @@
 .vscode/
-/WebTurntable/*
+build/
+
+# Ignore build artifacts
+*.bin
+*.hex
+*.elf
+*.map

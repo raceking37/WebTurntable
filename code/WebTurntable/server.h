@@ -1,20 +1,14 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-#include <ESP8266WiFi.h>
-#include <ESPAsyncTCP.h>
-#include <ESPAsyncWebServer.h>
-#include <LittleFS.h>
+// Access point credentials
+constexpr const char* WIFI_SSID       = "TURNTABLE";
+constexpr const char* WIFI_PASSWORD   = "";
 
-#define SSID        "TURNTABLE"
-#define PASSWORD    ""
-
-void onWsEvent (AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len);
-void handleClientMessage(void *arg, uint8_t *data, size_t len);
+// Initialize the webserver
 void initWebserver();
-void onIndexRequest(AsyncWebServerRequest *request);
-void onCSSRequest(AsyncWebServerRequest *request);
-void handleWebserver();
-void updatePage();
+
+// Save turntable settings to flash if needed
+void handleSettingsStorage();
 
 #endif // SERVER_H

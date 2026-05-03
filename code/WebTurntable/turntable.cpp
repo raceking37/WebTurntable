@@ -1,42 +1,75 @@
-#include "Arduino.h"
 #include "turntable.h"
 
-Turntable gTurntable = {1, 0, 0, 1};
+// Global turntable settings structure
+TurntableSettings g_turntable = {};
 
-// Make one step in half stepping mode
-void stepHalf(uint16_t stepDelay, bool rotateCW)
+namespace
 {
-    static uint8_t counter = 0;
-
-    for (uint8_t i = 0; i < 4; i++)
+    // Motor coil activation patterns for half-stepping mode (8 phases)
+    constexpr uint8_t HALF_STEPPING_PATTERN[8][4] = 
     {
-        digitalWrite(MOTOR_PINS[i], HALF_STEPPING_PATTERN[counter][i]);
-    }
-    delayMicroseconds(stepDelay);
+        {1, 0, 0, 0},
+        {1, 1, 0, 0},
+        {0, 1, 0, 0},
+        {0, 1, 1, 0},
+        {0, 0, 1, 0},
+        {0, 0, 1, 1},
+        {0, 0, 0, 1},
+        {1, 0, 0, 1}
+    };
 
-    counter = rotateCW ? (counter + 7) % 8 : (counter + 1) % 8;
+    // Motor coil activation patterns for full-stepping mode (4 phases)
+    constexpr uint8_t FULL_STEPPING_PATTERN[4][4] = 
+    {
+        {1, 0, 0, 0},
+        {0, 1, 0, 0},
+        {0, 0, 1, 0},
+        {0, 0, 0, 1}
+    };
+
+    // Convert slider position (0-100) to motor step delay (microseconds)
+    uint16_t convertSpeedToDelay(const uint16_t sliderSpeed)
+    {
+        constexpr uint16_t kDelayMultiplier = (MAX_DELAY - MIN_DELAY) / TOTAL_SLIDER_STEPS;
+        return MAX_DELAY - (kDelayMultiplier * sliderSpeed);
+    }
+
+    // Execute one half-stepping phase
+    // Applies activation pattern and advances to next coil sequence
+    void stepHalf(const uint16_t stepDelay, const RotateDirection dir)
+    {
+        static uint8_t counter = 0;
+
+        for (uint8_t i = 0; i < 4; i++)
+        {
+            digitalWrite(MOTOR_PINS[i], HALF_STEPPING_PATTERN[counter][i]);
+        }
+        delayMicroseconds(stepDelay);
+
+        counter = dir == RotateDirection::CW ? (counter + 7) % 8 : (counter + 1) % 8;
+    }
+
+    // Execute one full-stepping phase
+    // Applies activation pattern and advances to next coil sequence
+    void stepFull(uint16_t stepDelay, RotateDirection dir)
+    {
+        static uint8_t counter = 0;
+
+        for (uint8_t i = 0; i < 4; i++)
+        {
+            digitalWrite(MOTOR_PINS[i], FULL_STEPPING_PATTERN[counter][i]);
+        }
+        delayMicroseconds(stepDelay);
+        
+        counter = dir == RotateDirection::CW ? (counter + 3) % 4 : (counter + 1) % 4;
+    }
 }
 
-
-// Make one step in full stepping mode
-void stepFull(uint16_t stepDelay, bool rotateCW)
-{
-    static uint8_t counter = 0;
-
-    for (uint8_t i = 0; i < 4; i++)
-    {
-        digitalWrite(MOTOR_PINS[i], FULL_STEPPING_PATTERN[counter][i]);
-    }
-    delayMicroseconds(stepDelay);
-    
-    counter = rotateCW ? (counter + 3) % 4 : (counter + 1) % 4;
-}
-
-
-// Do turntable things
+// Main turntable control loop
 void handleTurntable()
 {    
-    if (gTurntable.sliderSpeed == 0 || gTurntable.direction == RotateDirection::OFF)
+    // Stop motor if speed is zero or direction is OFF
+    if (g_turntable.sliderSpeed == 0 || g_turntable.direction == RotateDirection::OFF)
     {
         for (uint8_t i = 0; i < 4; i++)
         {
@@ -45,16 +78,16 @@ void handleTurntable()
         return;
     }
 
-    bool rotateCW = gTurntable.direction == RotateDirection::CW ? true : false;
+    uint16_t stepDelay = convertSpeedToDelay(g_turntable.sliderSpeed);
 
-    switch (gTurntable.mode)
+    switch (g_turntable.mode)
     {
         case RotateMode::HALF_STEPPING:
-            stepHalf(gTurntable.delayValue/2, rotateCW);
+            stepHalf(stepDelay / 2, g_turntable.direction);
             break;
 
         case RotateMode::FULL_STEPPING:
-            stepFull(gTurntable.delayValue, rotateCW);
+            stepFull(stepDelay, g_turntable.direction);
             break;
 
         default:

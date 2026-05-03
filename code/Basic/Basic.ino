@@ -2,10 +2,11 @@
     Simple example code to get the Turntable spinning.
 */
 
-const uint8_t MOTOR_PINS[] = {D5, D6, D7, D8};
-const uint8_t LED_PIN = D4;
+static constexpr uint8_t MOTOR_PINS[] = {D5, D6, D7, D8};
+static constexpr uint8_t LED_PIN = D4;
 
-const uint8_t HALF_STEPPING_PATTERN[8][4] = {
+static constexpr uint8_t HALF_STEPPING_PATTERN[8][4] = 
+{
     {1, 0, 0, 0},
     {1, 1, 0, 0},
     {0, 1, 0, 0},
@@ -40,7 +41,7 @@ void loop()
     The function below drives it in half-stepping mode, which will need
     4076 steps in order to make one full rotation.
 */
-void stepHalf(uint16_t stepDelay, bool rotateCW)
+void stepHalf(const uint16_t stepDelay, const bool rotateCW)
 {
     static uint8_t counter = 0;
 

@@ -1,6 +1,8 @@
 #ifndef TURNTABLE_H
 #define TURNTABLE_H
 
+#include <Arduino.h>
+
 // Turntable pin definitions
 const uint8_t MOTOR_PINS[] = {D5, D6, D7, D8};
 const uint8_t LED_PIN = D4;
@@ -12,52 +14,36 @@ const uint8_t LED_PIN = D4;
 // Webpage slider step count
 #define TOTAL_SLIDER_STEPS 100
 
-// Delay change per slider increment (in microseconds)
-#define DELAY_MULTIPLIER ((MAX_DELAY - MIN_DELAY)/TOTAL_SLIDER_STEPS)
-
-enum RotateDirection
+// Rotation direction states
+enum RotateDirection : uint8_t
 {
-    CW,
-    OFF,
-    CCW
+    CW = 0,
+    OFF = 1,
+    CCW = 3
 };
 
-enum RotateMode
+// Stepping mode determines the coil activation pattern and step sequence
+enum RotateMode : uint8_t
 {
-    FULL_STEPPING,
-    HALF_STEPPING
+    FULL_STEPPING = 0,
+    HALF_STEPPING = 1
 };
 
-struct Turntable
+// Struct to hold the current turntable settings
+struct TurntableSettings
 {
-    uint8_t direction;
-    uint16_t delayValue;
-    uint16_t sliderSpeed;
-    uint8_t mode;
+    static constexpr uint32_t MAGIC = 0x5454424C;
+
+    uint32_t magic              = MAGIC;
+    RotateDirection direction   = RotateDirection::OFF;
+    uint16_t sliderSpeed        = 0;
+    RotateMode mode             = RotateMode::FULL_STEPPING;
 };
 
-extern Turntable gTurntable;
+// Global instance holding the turntable settings
+extern TurntableSettings g_turntable;
 
-const uint8_t HALF_STEPPING_PATTERN[8][4] = {
-    {1, 0, 0, 0},
-    {1, 1, 0, 0},
-    {0, 1, 0, 0},
-    {0, 1, 1, 0},
-    {0, 0, 1, 0},
-    {0, 0, 1, 1},
-    {0, 0, 0, 1},
-    {1, 0, 0, 1}
-};
-
-const uint8_t FULL_STEPPING_PATTERN[4][4] = {
-    {1, 0, 0, 0},
-    {0, 1, 0, 0},
-    {0, 0, 1, 0},
-    {0, 0, 0, 1}
-};
-
-void stepHalf(uint16_t stepDelay, bool rotateCW);
-void stepFull(uint16_t stepDelay, bool rotateCW);
+// Main turntable control loop
 void handleTurntable();
 
 #endif // TURNTABLE_H
